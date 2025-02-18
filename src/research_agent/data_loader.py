@@ -6,4 +6,9 @@ print("ok")
 
 
 class DataLoader:
-    pass
+    def fetch_arxiv_papers(self, query):
+        def search_arxiv(query):
+            pass
+
+    def fetch_google_scholar_papers(self, query):
+        pass
