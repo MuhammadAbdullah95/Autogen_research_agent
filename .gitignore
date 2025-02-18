@@ -10,3 +10,6 @@ wheels/
 .venv
 # api keys
 .env
+
+uv.lock
+.python-version
