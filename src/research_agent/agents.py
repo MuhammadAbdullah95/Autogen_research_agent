@@ -7,11 +7,57 @@ load_dotenv()
 
 
 class ResearchAgent:
-    def __init__(self):
-        pass
+    def __init__(self, api_key):
+        self.groq_api_key = api_key
+        self.llm_config = {
+            "config_list": [
+                {
+                    "model": "llama-3.3-70b-versatile",
+                    "api_key": self.groq_api_key,
+                    "api_type": "groq",
+                }
+            ]
+        }
+
+        self.summarizer_agent = AssistantAgent(
+            name="summarizer_agent",
+            system_message="Summaraize the retrieved research papers and present concise summaries to the user, JUST GIVE THE RELEVANT SUMMARIES OF THE RESEARCH PAPER AND NOT YOUR THOUGHT PROCESS.",
+            llm_config=self.llm_config,
+            human_input_mode="NEVER",
+            code_execution_config=False,
+        )
+
+        self.advantages_and_disadvantages_agent = AssistantAgent(
+            name="advantages_and_disadvantages_agent",
+            system_message="Analyze the summaries of the research papers and provide a list of advantages and disadvantges for each paper in a pointwise format. JUST GIVE THE ADVANTAGES AND DISADVANTAGES, NOT YOUR THOUGHT PROCESS",
+            llm_config=self.llm_config,
+            human_input_mode="NEVER",
+            code_execution_config=False,
+        )
 
     def summarize_paper(self, paper_summary):
-        pass
+        """Generates a summary of the research paper."""
+        summary_response = self.summarizer_agent.generate_reply(
+            messages=[
+                {"role": "user", "content": f"Summarize this paper: {paper_summary}"}
+            ]
+        )
+        return (
+            summary_response.get("content", "Summarization Failed!")
+            if isinstance(summary_response, dict)
+            else str(summary_response)
+        )
 
     def analyze_advantages_disadvantages(self, summary):
-        pass
+        """Generates advantages and disadvantages of the research paper."""
+        adv_dis_response = self.advantages_and_disadvantages_agent.generate_reply(
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Provide advantages and disadvantages for this paper. {summary}",
+                }
+            ]
+        )
+        return adv_dis_response.get(
+            "content", "Advantages and Disadvantages analysis failed!"
+        )
