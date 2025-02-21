@@ -26,11 +26,15 @@ class DataLoader:
                 root = ET.fromstring(response.text)
                 return [
                     {
-                        "title": entry.find("{http://www.w3.org/2005/Atom}}title").text,
+                        "title": entry.find("{http://www.w3.org/2005/Atom}title").text,
                         "summary": entry.find(
                             "{http://www.w3.org/2005/Atom}summary"
                         ).text,
                         "link": entry.find("{http://www.w3.org/2005/Atom}id").text,
+                        "pdf_link": entry.find(
+                            "{http://www.w3.org/2005/Atom}id"
+                        ).text.replace("arxiv.org/abs", "arxiv.org/pdf")
+                        + ".pdf",  # View PDF link
                     }
                     for entry in root.findall("{http://www.w3.org/2005/Atom}entry")
                 ]
